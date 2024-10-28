@@ -1,6 +1,6 @@
 # hadisrawi
 
-Dataset 62 ribuan hadis dan 24 ribuan perawi dalam dwiaksara (Arab-Latin) dan dwibahasa (Arab-Indonesia).
+Dataset 62 ribuan hadis dan 42 ribuan perawi dalam dwiaksara (Arab-Latin) dan dwibahasa (Arab-Indonesia).
 
 ## Hadis
 
@@ -16,6 +16,10 @@ Dataset 62 ribuan hadis dan 24 ribuan perawi dalam dwiaksara (Arab-Latin) dan dw
 | Sunan An-Nasa'i | 5662 |
 | Sunan Ibnu Majah | 4332 |
 | TOTAL | 62169 |
+
+## Perawi
+
+Jumlah: 40023 perawi
 
 ## Sumber
 
