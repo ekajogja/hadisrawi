@@ -2,6 +2,21 @@
 
 Dataset 62 ribuan hadis dan 24 ribuan perawi dalam dwiaksara (Arab-Latin) dan dwibahasa (Arab-Indonesia).
 
+## Hadis
+
+| Kitab | Jumlah hadis |
+| ----- | ------------ |
+| Al-Muwaththa | 1594 |
+| Musnad Ahmad | 26363 |
+| Shahih Bukhari | 7008 |
+| Shahih Muslim | 5362 |
+| Sunan Abu Dawud | 4590 |
+| Sunan Ad-Darimi | 3367 |
+| Jami At-Tirmidzi | 3891 |
+| Sunan An-Nasa'i | 5662 |
+| Sunan Ibnu Majah | 4332 |
+| TOTAL | 62169 |
+
 ## Sumber
 
 + Hadis - <https://huggingface.co/datasets/Ahmedhany216/Islamic-Books>
