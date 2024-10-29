@@ -1,6 +1,6 @@
 # hadisrawi
 
-Dataset 62 ribuan hadis dan 42 ribuan perawi dalam dwiaksara (Arab-Latin) dan dwibahasa (Arab-Indonesia).
+Dataset 62 ribuan hadis dan 40 ribuan perawi dalam dwiaksara (Arab-Latin) dan dwibahasa (Arab-Indonesia).
 
 ## Hadis
 
