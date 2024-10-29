@@ -1,5 +1,6 @@
 import json
 import time
+import os
 from anthropic import Anthropic
 
 def get_api_key():
@@ -32,6 +33,16 @@ def translate_hadith(client, arabic_text):
         print(f"Error dalam terjemahan: {str(e)}")
         return None
 
+def load_or_create_translated_data(filename):
+    """Load existing translations or create a new list"""
+    if os.path.exists(filename):
+        try:
+            with open(filename, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            print(f"Error: File {filename} tidak valid. Membuat file baru.")
+    return []
+
 def main():
     # Get API key
     api_key = get_api_key()
@@ -41,55 +52,59 @@ def main():
 
     # Initialize Anthropic client
     client = Anthropic(api_key=api_key)
-    filename = 'resultjson/h1-al-muwaththa.json'
-    
+
+    source_filename = 'resultjson/h1-al-muwaththa.json'
+    output_filename = 'terjemahanjson/h1-al-muwaththa.json'
+
     try:
-        # Read JSON file
-        print(f"Membaca file {filename}...")
-        with open(filename, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-        
-        total = len(data)
-        processed = 0
-        
-        print(f"Mulai menerjemahkan {total} hadis...")
-        
-        # Process all hadith
-        for hadith in data:
-            if not hadith.get('Terjemahan'):  # Only translate if no translation exists
-                print(f"\nMemproses hadis ID: {hadith['hadis_id']} ({processed + 1}/{total})")
-                
-                translation = translate_hadith(client, hadith['Hadis'])
-                if translation:
-                    hadith['Terjemahan'] = translation
-                    processed += 1
-                    print(f"Hadis {hadith['hadis_id']} berhasil diterjemahkan")
-                    print(f"Progress: {processed}/{total} ({(processed/total)*100:.1f}%)")
-                    
-                    # Save progress every 10 translations
-                    if processed % 10 == 0:
-                        with open(filename, 'w', encoding='utf-8') as f:
-                            json.dump(data, f, ensure_ascii=False, indent=4)
-                        print("Progress disimpan ke file")
-                
-                # Add delay between requests to respect API rate limits
-                time.sleep(1)
-        
-        # Final save
-        print("\nMenyimpan hasil akhir...")
-        with open(filename, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
-            
-        print(f"\nSelesai: {processed} terjemahan telah ditambahkan ke {filename}")
-        
+        # Read source JSON file
+        print(f"Membaca file {source_filename}...")
+        with open(source_filename, 'r', encoding='utf-8') as f:
+            source_data = json.load(f)
+
+        # Create output directory if it doesn't exist
+        os.makedirs(os.path.dirname(output_filename), exist_ok=True)
+
+        # Load existing translations or create new list
+        translated_data = load_or_create_translated_data(output_filename)
+
+        total = len(source_data)
+        processed = len(translated_data)
+
+        print(f"Mulai menerjemahkan {total - processed} hadis yang belum diterjemahkan...")
+
+        # Process hadith one by one
+        for i in range(processed, total):
+            hadith = source_data[i]
+            print(f"\nMemproses hadis ID: {hadith['hadis_id']} ({i + 1}/{total})")
+
+            translation = translate_hadith(client, hadith['Hadis'])
+            if translation:
+                translated_hadith = hadith.copy()
+                translated_hadith['Terjemahan'] = str(translation)  # Convert to string
+                translated_data.append(translated_hadith)
+                print(f"Hadis {hadith['hadis_id']} berhasil diterjemahkan")
+                print(f"Progress: {i + 1}/{total} ({((i + 1)/total)*100:.1f}%)")
+
+                # Save progress after each translation
+                with open(output_filename, 'w', encoding='utf-8') as f:
+                    json.dump(translated_data, f, ensure_ascii=False, indent=4)
+                print("Progress disimpan ke file")
+
+            # Add delay between requests to respect API rate limits
+            time.sleep(1)
+
+        print(f"\nSelesai: {len(translated_data)} terjemahan telah ditambahkan ke {output_filename}")
+
     except FileNotFoundError:
-        print(f"Error: File {filename} tidak ditemukan")
+        print(f"Error: File {source_filename} tidak ditemukan")
     except Exception as e:
         print(f"Error memproses file: {str(e)}")
-        # Save progress in case of error
-        with open(filename, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
-        print("Progress disimpan sebelum error")
+        if 'translated_data' in locals():
+            # Save progress in case of error
+            with open(output_filename, 'w', encoding='utf-8') as f:
+                json.dump(translated_data, f, ensure_ascii=False, indent=4)
+            print("Progress disimpan sebelum error")
 
 if __name__ == "__main__":
     main()
