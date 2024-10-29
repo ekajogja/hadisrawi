@@ -43,6 +43,12 @@ def load_or_create_translated_data(filename):
             print(f"Error: File {filename} tidak valid. Membuat file baru.")
     return []
 
+def find_last_translated_id(translated_data):
+    """Find the last translated hadis_id"""
+    if translated_data:
+        return translated_data[-1]['hadis_id']
+    return None
+
 def main():
     # Get API key
     api_key = get_api_key()
@@ -53,8 +59,8 @@ def main():
     # Initialize Anthropic client
     client = Anthropic(api_key=api_key)
 
-    source_filename = 'resultjson/h1-al-muwaththa.json'
-    output_filename = 'terjemahanjson/h1-al-muwaththa.json'
+    source_filename = 'resultjson/h6-sunanad-darimi.json'
+    output_filename = 'terjemahanjson/h6-sunanad-darimi.json'
 
     try:
         # Read source JSON file
@@ -68,13 +74,24 @@ def main():
         # Load existing translations or create new list
         translated_data = load_or_create_translated_data(output_filename)
 
+        # Find the last translated hadis_id
+        last_translated_id = find_last_translated_id(translated_data)
+
         total = len(source_data)
-        processed = len(translated_data)
+        processed = 0
 
-        print(f"Mulai menerjemahkan {total - processed} hadis yang belum diterjemahkan...")
+        # Find the starting index based on the last translated hadis_id
+        start_index = 0
+        if last_translated_id:
+            for i, hadith in enumerate(source_data):
+                if hadith['hadis_id'] == last_translated_id:
+                    start_index = i + 1
+                    break
 
-        # Process hadith one by one
-        for i in range(processed, total):
+        print(f"Mulai menerjemahkan dari hadis_id: {source_data[start_index]['hadis_id']} ({start_index + 1}/{total})")
+
+        # Process hadith one by one starting from the next hadis_id
+        for i in range(start_index, total):
             hadith = source_data[i]
             print(f"\nMemproses hadis ID: {hadith['hadis_id']} ({i + 1}/{total})")
 
