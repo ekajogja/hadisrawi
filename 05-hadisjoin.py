@@ -10,8 +10,8 @@ output_file = 'terjemahhadis.json'
 # Inisialisasi list untuk menyimpan semua data JSON
 combined_data = []
 
-# Ambil semua file JSON dalam direktori terjemahanjson, kecuali h4-shahihmuslim.json
-json_files = [f for f in os.listdir(input_dir) if f.endswith('.json') and f != 'h4-shahihmuslim.json']
+# Ambil semua file JSON dalam direktori terjemahanjson
+json_files = [f for f in os.listdir(input_dir) if f.endswith('.json')]
 
 # Urutkan file berdasarkan nama file
 json_files_sorted = sorted(json_files, key=os.path.basename)

@@ -108,6 +108,10 @@ def main():
                     json.dump(translated_data, f, ensure_ascii=False, indent=4)
                 print("Progress disimpan ke file")
 
+            else:
+                print(f"Error: Gagal menerjemahkan hadis ID: {hadith['hadis_id']}. Proses dihentikan.")
+                break  # Stop processing if there's an error
+
             # Add delay between requests to respect API rate limits
             time.sleep(1)
 

@@ -25,12 +25,13 @@
 </head>
 <body>
     <div class="container">
-        <h3 class="mt-4 mb-4">MHS Hadis Database (17.774 hadis dari 5 kitab)</h3>
+        <h3 class="mt-4 mb-4">MHS Hadis Database (23,136 hadis dari 6 kitab)</h3>
         <div class="mb-4">
             <label for="penulis-filter" class="form-label">Filter Penulis:</label>
             <select id="penulis-filter" class="form-select">
                 <option value="">Semua Penulis</option>
                 <option value="Malik bin Anas">Malik bin Anas</option>
+                <option value="Imam Muslim">Imam Muslim</option>
                 <option value="Imam Abu Dawud">Imam Abu Dawud</option>
                 <option value="Ad-Darimi">Ad-Darimi</option>
                 <option value="At-Tirmidzi">At-Tirmidzi</option>
@@ -58,7 +59,7 @@
         let currentPage = 1;
         let hadisData = [];
         let filteredHadisData = [];
-        const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+        const CACHE_DURATION = 60 * 60 * 1000;
 
         function openDatabase() {
             return new Promise((resolve, reject) => {
@@ -110,16 +111,18 @@
         function loadHadisData() {
             loadDataFromIndexedDB().then(data => {
                 if (data.length > 0) {
+                    console.log('Loaded Data from IndexedDB:', data);
                     hadisData = data;
-                    filteredHadisData = data.filter(hadis => hadis.Penulis === 'Malik bin Anas');
+                    filteredHadisData = data;
                     displayHadis(currentPage);
                     setupPagination();
                 } else {
                     fetch('terjemahhadis.json')
                         .then(response => response.json())
                         .then(data => {
+                            console.log('Fetched Data from JSON:', data);
                             hadisData = data;
-                            filteredHadisData = data.filter(hadis => hadis.Penulis === 'Malik bin Anas');
+                            filteredHadisData = data;
                             saveDataToIndexedDB(data);
                             displayHadis(currentPage);
                             setupPagination();
@@ -166,11 +169,13 @@
 
         function filterHadisByPenulis() {
             const penulisFilter = document.getElementById('penulis-filter').value;
+            console.log('Penulis Filter:', penulisFilter);
             if (penulisFilter) {
                 filteredHadisData = hadisData.filter(hadis => hadis.Penulis === penulisFilter);
             } else {
                 filteredHadisData = hadisData;
             }
+            console.log('Filtered Hadis Data:', filteredHadisData);
             currentPage = 1;
             displayHadis(currentPage);
             setupPagination();
@@ -178,21 +183,23 @@
 
         function searchHadis() {
             const searchQuery = document.getElementById('search-input').value;
+            console.log('Search Query:', searchQuery);
             if (searchQuery) {
                 const isArabic = /[\u0600-\u06FF]/.test(searchQuery);
                 const fuse = new Fuse(hadisData, {
                     keys: isArabic ? ['Hadis'] : ['Terjemahan'],
                     includeScore: true,
-                    threshold: 0.3, // Meningkatkan keketatan pencocokan
-                    distance: 50, // Mengurangi jarak maksimum antara dua karakter yang cocok
-                    location: 0, // Pencocokan harus dekat dengan awal string
-                    maxPatternLength: 64, // Memungkinkan pencarian dengan pola yang lebih panjang
-                    minMatchCharLength: 3, // Setidaknya tiga karakter harus cocok
-                    caseSensitive: false, // Pencarian tidak peka terhadap huruf besar/kecil
-                    tokenize: false, // Pencarian tidak dilakukan pada setiap kata
-                    matchAllTokens: false // Tidak semua token harus cocok
+                    threshold: 0.3,
+                    distance: 50,
+                    location: 0,
+                    maxPatternLength: 64,
+                    minMatchCharLength: 3,
+                    caseSensitive: false,
+                    tokenize: true,
+                    matchAllTokens: true
                 });
                 const results = fuse.search(searchQuery);
+                console.log('Search Results:', results);
                 filteredHadisData = results.map(result => result.item);
             } else {
                 filteredHadisData = hadisData;
