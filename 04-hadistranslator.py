@@ -59,8 +59,8 @@ def main():
     # Initialize Anthropic client
     client = Anthropic(api_key=api_key)
 
-    source_filename = 'resultjson/h6-sunanad-darimi.json'
-    output_filename = 'terjemahanjson/h6-sunanad-darimi.json'
+    source_filename = 'resultjson/h7-jamiat-tirmidzi.json'
+    output_filename = 'terjemahanjson/h7-jamiat-tirmidzi.json'
 
     try:
         # Read source JSON file
