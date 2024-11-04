@@ -89,6 +89,17 @@ def append_to_output(item, output_file):
         print(f"Error appending to output file: {str(e)}")
         raise
 
+def get_last_processed_id(output_file):
+    """Get the hadis_id of the last processed item"""
+    try:
+        with open(output_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            if data:
+                return data[-1].get('hadis_id')
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+    return None
+
 def process_json(input_file, output_file):
     try:
         # Read input file
@@ -96,13 +107,9 @@ def process_json(input_file, output_file):
         with open(input_file, 'r', encoding='utf-8') as f:
             input_data = json.load(f)
 
-        # Read existing processed data to avoid duplicates
-        try:
-            with open(output_file, 'r', encoding='utf-8') as f:
-                processed_data = json.load(f)
-                processed_indices = {item.get('No'): True for item in processed_data}
-        except (FileNotFoundError, json.JSONDecodeError):
-            processed_indices = {}
+        # Get the last processed hadis_id
+        last_processed_id = get_last_processed_id(output_file)
+        start_processing = False if last_processed_id else True
 
         # Initialize Anthropic client
         api_key = get_api_key()
@@ -113,11 +120,15 @@ def process_json(input_file, output_file):
         # Process each entry
         total_items = len(input_data)
         for i, item in enumerate(input_data):
-            if item.get('No') in processed_indices:
-                print(f"Skipping already processed item {i+1} of {total_items}")
+            current_hadis_id = item.get('hadis_id')
+
+            if not start_processing:
+                if current_hadis_id == last_processed_id:
+                    start_processing = True
+                    print(f"Resuming from hadis_id: {current_hadis_id}")
                 continue
 
-            print(f"\nProcessing item {i+1} of {total_items}...")
+            print(f"\nProcessing item {i+1} of {total_items} (hadis_id: {current_hadis_id})...")
 
             # Extract details
             hadis = item.get('Hadis', '')
