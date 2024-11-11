@@ -117,6 +117,9 @@ def process_json(input_file, output_file):
             raise Exception("Failed to read API key from haikukey.txt")
         client = Anthropic(api_key=api_key)
 
+        # Define the stop_id
+        stop_id = "ha62169"
+
         # Process each entry
         total_items = len(input_data)
         for i, item in enumerate(input_data):
@@ -156,6 +159,11 @@ def process_json(input_file, output_file):
 
             # Append processed item to output file
             append_to_output(item, output_file)
+
+            # Check if we need to stop processing
+            if current_hadis_id == stop_id:
+                print(f"Reached stop_id: {stop_id}. Stopping processing.")
+                break
 
         print("\nProcessing complete!")
 
