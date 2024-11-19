@@ -17,9 +17,12 @@ Dataset 62 ribuan hadis dan 40 ribuan perawi dalam dwiaksara (Arab-Latin) dan dw
 | Sunan Ibnu Majah | 4332 |
 | TOTAL | 62169 |
 
+
+Lihat anotasi hadis dengan terjemah, daftar perawi, premis, dan topik di [Anotasi Hadis](https://datamhs.mahadsiber.my.id/dashboard/#/nc/view/d5e2a3f2-8a7a-4c40-a9c3-2c0189c994dc)
+
 ## Perawi
 
-Jumlah: 40023 perawi
+in progress
 
 ## Sumber
 
